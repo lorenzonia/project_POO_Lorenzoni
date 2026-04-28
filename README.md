@@ -2,13 +2,13 @@
      width="30%"
      style="padding: 10px">
 
-# << Título do projeto >>
+# Máquina de tração e compressão
 
-## << Descrição breve do domínio do problema >>
+## Implementação da máquina
 
 > Repositório destinado para o desenvolvimento do projeto final da discipliana PRG22107 - Programação orienta a objeto. 
 > 
-> Aluno: Nome do aluno  
+> Aluno: Anderson Martins Lorenzoni  
 > Professor: Hugo Marcondes
 
 <p align=center><strong>SUMÁRIO</strong></p>
