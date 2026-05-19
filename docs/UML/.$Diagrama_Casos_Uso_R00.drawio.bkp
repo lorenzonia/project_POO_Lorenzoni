@@ -1,0 +1,63 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram name="Página-1" id="gik2C1kdNv0bUmLgN_N7">
+    <mxGraphModel dx="1042" dy="626" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="sOr0e_udeGAA550UDJiL-1" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);" value="User" vertex="1">
+          <mxGeometry height="54" width="92" x="20" y="124" as="geometry" />
+        </mxCell>
+        <mxCell id="sOr0e_udeGAA550UDJiL-2" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);" value="Sistema" vertex="1">
+          <mxGeometry height="54" width="116" x="323" y="124" as="geometry" />
+        </mxCell>
+        <mxCell id="sOr0e_udeGAA550UDJiL-3" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);" value="Sensor" vertex="1">
+          <mxGeometry height="54" width="106" x="660" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="sOr0e_udeGAA550UDJiL-4" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);" value="Interface" vertex="1">
+          <mxGeometry height="54" width="125" x="650" y="124" as="geometry" />
+        </mxCell>
+        <mxCell id="sOr0e_udeGAA550UDJiL-5" parent="1" style="whiteSpace=wrap;strokeWidth=2;fillColor=light-dark(#eeeeee,#1f2020);strokeColor=light-dark(#999999,#cccccc);fontColor=light-dark(#333333,#cccccc);" value="Controle" vertex="1">
+          <mxGeometry height="54" width="122" x="652" y="228" as="geometry" />
+        </mxCell>
+        <mxCell id="sOr0e_udeGAA550UDJiL-6" edge="1" parent="1" source="sOr0e_udeGAA550UDJiL-1" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.25;entryX=0;entryY=0.21;rounded=0;" target="sOr0e_udeGAA550UDJiL-2" value="Iniciar sistema">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="218" y="107" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sOr0e_udeGAA550UDJiL-7" edge="1" parent="1" source="sOr0e_udeGAA550UDJiL-1" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.5;entryX=0;entryY=0.5;rounded=0;" target="sOr0e_udeGAA550UDJiL-2" value="Parar sistema">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sOr0e_udeGAA550UDJiL-8" edge="1" parent="1" source="sOr0e_udeGAA550UDJiL-1" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.75;entryX=0;entryY=0.79;rounded=0;" target="sOr0e_udeGAA550UDJiL-2" value="Configurar parâmetros">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="218" y="195" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sOr0e_udeGAA550UDJiL-9" edge="1" parent="1" source="sOr0e_udeGAA550UDJiL-2" style="curved=1;startArrow=none;endArrow=block;exitX=0.87;exitY=0;entryX=0;entryY=0.5;rounded=0;" target="sOr0e_udeGAA550UDJiL-3" value="Gerar dados simulados">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="544" y="47" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sOr0e_udeGAA550UDJiL-10" edge="1" parent="1" source="sOr0e_udeGAA550UDJiL-2" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.5;entryX=0;entryY=0.5;rounded=0;" target="sOr0e_udeGAA550UDJiL-4" value="Exibir gráficos">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="sOr0e_udeGAA550UDJiL-11" edge="1" parent="1" source="sOr0e_udeGAA550UDJiL-2" style="curved=1;startArrow=none;endArrow=block;exitX=0.87;exitY=1;entryX=0;entryY=0.5;rounded=0;" target="sOr0e_udeGAA550UDJiL-5" value="Detectar limites">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="544" y="255" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
