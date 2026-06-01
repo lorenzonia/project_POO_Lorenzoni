@@ -28,7 +28,7 @@ O diagrama de classes apresenta a estrutura estática do sistema, incluindo clas
 
 ## 3. Descrição das Classes
 
-### 🔵 MainWindow (Interface)
+### --> MAinWindow (Interface)
 
 Responsável pela interface gráfica do sistema.
 
@@ -48,7 +48,7 @@ Responsável pela interface gráfica do sistema.
 
 ---
 
-### 🔵 Controller
+### --> Controller
 
 Responsável pelo controle da aplicação.
 
@@ -70,7 +70,7 @@ Responsável pelo controle da aplicação.
 
 ---
 
-### 🔵 SensorSimulator
+### --> SensorSimulator
 
 Responsável pela simulação dos sensores.
 
@@ -86,7 +86,7 @@ Responsável pela simulação dos sensores.
 
 ---
 
-### 🔵 SensorData
+### --> SensorData
 
 Classe responsável por armazenar os dados do sistema.
 
@@ -101,7 +101,7 @@ Classe responsável por armazenar os dados do sistema.
 
 ---
 
-### 🔵 Cilindro
+### --> Cilindro
 
 Representa o comportamento do atuador da máquina.
 
@@ -121,7 +121,7 @@ Representa o comportamento do atuador da máquina.
 
 ---
 
-### 🔵 Enumerações
+### --> Enumerações
 
 #### ModoOperacao
 Define o modo de operação do sistema:
@@ -212,5 +212,8 @@ Os diagramas apresentados servem como base para a próxima etapa, que correspond
 
 ---
 
-📎 Documento anterior: `analise.md`  
-📎 Próximo documento: `implementacao.md`
+<div align=center>
+
+[Voltar](analise.md) | [Avançar](implementacao.md)
+
+</div>
