@@ -5,7 +5,7 @@
 
 Este projeto tem como objetivo o desenvolvimento de uma aplicação para simulação de uma **máquina de tração e compressão**, utilizando o paradigma de Programação Orientada a Objetos, com implementação futura em C++ e framework Qt.
 
-A máquina simulada representa o comportamento de um cilindro pneumático, sendo capaz de executar movimentos de avanço (compressão) e retorno (tração). Nesta implementação, não serão utilizados sensores físicos; os dados de operação serão gerados de forma simulada, respeitando intervalos e comportamentos esperados.
+A máquina simulada representa o comportamento de um cilindro pneumático, sendo capaz de executar movimentos de avanço (compressão) e retorno (tração). Nesta implementação, não serão utilizados sensores físicos, os dados de operação serão gerados de forma simulada, respeitando intervalos e comportamentos esperados.
 
 O sistema permitirá ao usuário controlar e monitorar a operação da máquina por meio de uma interface gráfica interativa.
 
@@ -133,5 +133,8 @@ Essas definições servem como base para a próxima fase do desenvolvimento, cor
 
 ---
 
-📎 Próximo documento: `projeto.md`
-``
+<div align=center>
+
+[Voltar](README.md) | [Avançar](projeto.md)
+
+</div>
