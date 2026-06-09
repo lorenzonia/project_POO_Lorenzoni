@@ -37,7 +37,8 @@ void Controller::stop()
 
 void Controller::processarDados()
 {
-    SensorData dados = simulador->gerarDados();
+    SensorData dados;
+    emit dadosAtualizados(dados);
 
     // Atualiza cilindro
     cilindro->avancar();
@@ -57,13 +58,13 @@ bool Controller::verificarLimites(const SensorData &dados)
 {
     // Limites simples para exemplo
 
-    if (dados.forca > 100.0)
+    if (dados.getForca() > 100.0)
         return true;
 
-    if (dados.pressao > 70.0)
+    if (dados.getPressao() > 70.0)
         return true;
 
-    if (dados.posicao < 0 || dados.posicao > 500)
+    if (dados.getPosicao() < 0 || dados.getPosicao() > 500)
         return true;
 
     return false;

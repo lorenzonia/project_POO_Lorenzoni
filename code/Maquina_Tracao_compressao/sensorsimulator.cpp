@@ -1,38 +1,22 @@
 #include "SensorSimulator.h"
 #include <QRandomGenerator>
+#include <cmath>
 
 SensorSimulator::SensorSimulator()
 {
 }
 
-SensorData SensorSimulator::gerarDados()
+float SensorSimulator::aplicarRuido(float valorReal, float percentual)
 {
+    // desvio padrão proporcional ao valor
+    float desvio = valorReal * percentual;
 
-    SensorData dados;
+    double u1 = QRandomGenerator::global()->generateDouble();
+    double u2 = QRandomGenerator::global()->generateDouble();
 
-    dados.setForca(gerarForca());
-    dados.setPressao(gerarPressao());
-    dados.setPosicao(gerarPosicao());
-    dados.setTimestamp(QDateTime::currentDateTime());
+    double z0 = sqrt(-2.0 * log(u1)) * cos(2 * M_PI * u2);
 
+    float ruido = z0 * desvio;
 
-    return dados;
-}
-
-float SensorSimulator::gerarForca()
-{
-    // Simula força de 0 a 100 N
-    return QRandomGenerator::global()->bounded(0.0, 100.0);
-}
-
-float SensorSimulator::gerarPressao()
-{
-    // Simula pressão de 10 a 60 bar
-    return QRandomGenerator::global()->bounded(10.0, 60.0);
-}
-
-float SensorSimulator::gerarPosicao()
-{
-    // Simula posição de 0 a 500 mm
-    return QRandomGenerator::global()->bounded(0.0, 500.0);
+    return valorReal + ruido;
 }

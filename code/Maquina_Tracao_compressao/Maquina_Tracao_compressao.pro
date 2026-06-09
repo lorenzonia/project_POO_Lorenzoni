@@ -8,16 +8,20 @@ CONFIG += c++17
 
 SOURCES += \
     cilindro.cpp \
+    cilindroview.cpp \
     controller.cpp \
     main.cpp \
     mainwindow.cpp \
+    qcustomplot.cpp \
     sensordata.cpp \
     sensorsimulator.cpp
 
 HEADERS += \
     cilindro.h \
+    cilindroview.h \
     controller.h \
     mainwindow.h \
+    qcustomplot.h \
     sensordata.h \
     sensorsimulator.h
 
@@ -25,3 +29,6 @@ HEADERS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+QT += core gui widgets printsupport
+QMAKE_CXXFLAGS += -Wa,-mbig-obj

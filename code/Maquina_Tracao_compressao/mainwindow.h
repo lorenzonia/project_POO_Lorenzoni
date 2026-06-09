@@ -5,9 +5,15 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QVBoxLayout>
+#include <QSlider>
+#include <QRadioButton>
+#include <QGroupBox>
 
 #include "Controller.h"
 #include "SensorData.h"
+#include "SensorSimulator.h"
+#include "qcustomplot.h"
+#include "cilindroview.h"
 
 class MainWindow : public QWidget
 {
@@ -23,19 +29,59 @@ private slots:
     void atualizarInterface(const SensorData &dados);
 
 private:
-    void setupUI();  // construção manual da interface
+    void setupUI();
+    CilindroView *cilindroView;
 
+    // =========================
+    // CONTROLE
+    // =========================
     Controller *controller;
+    SensorSimulator *sensor;
 
-    // Componentes da interface
+    // =========================
+    // BOTÕES
+    // =========================
     QPushButton *btnStart;
     QPushButton *btnStop;
 
+    // =========================
+    // LABELS (LEITURAS)
+    // =========================
     QLabel *labelForca;
     QLabel *labelPressao;
     QLabel *labelPosicao;
 
-    QVBoxLayout *layout;
+    // =========================
+    // GRÁFICO
+    // =========================
+    QCustomPlot *grafico;
+    QCPGraph *curvaForca;
+
+    // =========================
+    // CONTROLE DE PRESSÃO
+    // =========================
+    QSlider *sliderPressao;
+    QLabel *labelPressaoControle;
+
+    // =========================
+    // CONTROLE DE VAZÃO
+    // =========================
+    QSlider *sliderVazao;
+    QLabel *labelVazao;
+
+    // =========================
+    // DIREÇÃO
+    // =========================
+    QRadioButton *radioAvanco;
+    QRadioButton *radioRetorno;
+
+    // =========================
+    // ESTADO DO SISTEMA
+    // =========================
+    double tempo;
+    double posicaoAtual;
+    double deslocamentoMaximo;
+    double deslocamentoMinimo;
 };
 
 #endif // MAINWINDOW_H
