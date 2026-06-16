@@ -72,7 +72,7 @@ void MainWindow::setupUI()
     // SLIDER PRESSÃO
     // =========================
     sliderPressao = new QSlider(Qt::Horizontal);
-    sliderPressao->setRange(0, 70); // 0 a 7.0 bar
+    sliderPressao->setRange(0, 70);
     sliderPressao->setValue(30);
 
     labelPressaoControle = new QLabel("Pressão: 3.0 bar");
@@ -85,10 +85,10 @@ void MainWindow::setupUI()
             });
 
     // =========================
-    // SLIDER VAZÃO (COM DECIMAL)
+    // SLIDER VAZÃO
     // =========================
     sliderVazao = new QSlider(Qt::Horizontal);
-    sliderVazao->setRange(0, 500); // 0.0 a 50.0 L/min
+    sliderVazao->setRange(0, 500);
     sliderVazao->setValue(100);
 
     labelVazao = new QLabel("Vazão: 10.0 L/min");
@@ -136,12 +136,6 @@ void MainWindow::setupUI()
     mainLayout->addWidget(grafico);
 
     // =========================
-    // CILINDRO (QGraphics)
-    // =========================
-    cilindroView = new CilindroView();
-    mainLayout->addWidget(cilindroView);
-
-    // =========================
     // CONFIGURAÇÕES
     // =========================
     QVBoxLayout *configLayout = new QVBoxLayout();
@@ -155,7 +149,23 @@ void MainWindow::setupUI()
     QGroupBox *grupoConfig = new QGroupBox("Configurações");
     grupoConfig->setLayout(configLayout);
 
-    mainLayout->addWidget(grupoConfig);
+    // =========================
+    // CILINDRO
+    // =========================
+    cilindroView = new CilindroView();
+
+    // =========================
+    // LAYOUT LATERAL (AQUI É A MUDANÇA)
+    // =========================
+    QHBoxLayout *areaLateral = new QHBoxLayout();
+
+    areaLateral->addWidget(grupoConfig);   // esquerda
+    areaLateral->addWidget(cilindroView);  // direita
+
+    areaLateral->setStretch(0, 2); // config maior
+    areaLateral->setStretch(1, 1); // cilindro menor
+
+    mainLayout->addLayout(areaLateral);
 
     // =========================
     // CONTROLES
@@ -173,12 +183,11 @@ void MainWindow::setupUI()
     mainLayout->addWidget(grupoControle);
 
     // =========================
-    // PROPORÇÕES (IMPORTANTE)
+    // PROPORÇÕES
     // =========================
     mainLayout->setStretch(0, 3); // gráfico
-    mainLayout->setStretch(1, 2); // cilindro
-    mainLayout->setStretch(2, 2); // config
-    mainLayout->setStretch(3, 1); // controle
+    mainLayout->setStretch(1, 2); // área lateral
+    mainLayout->setStretch(2, 1); // controle
 
     setLayout(mainLayout);
 

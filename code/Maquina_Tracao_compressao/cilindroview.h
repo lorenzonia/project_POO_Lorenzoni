@@ -4,6 +4,7 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsRectItem>
+#include <QGraphicsEllipseItem>
 
 class CilindroView : public QGraphicsView
 {
@@ -17,11 +18,23 @@ public:
 private:
     QGraphicsScene *scene;
 
+    // Componentes
     QGraphicsRectItem *corpo;
     QGraphicsRectItem *haste;
     QGraphicsEllipseItem *pistao;
 
+    // Parâmetros ajustáveis
     double posicaoMax;
+
+    int larguraCena;
+    int alturaCena;
+
+    int margem;
+    int larguraCorpo;
+    int alturaCorpo;
+
+    int offsetX;
+    int offsetY;
 };
 
 #endif
