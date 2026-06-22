@@ -8,6 +8,7 @@
 #include <QSlider>
 #include <QRadioButton>
 #include <QGroupBox>
+#include <QLineEdit>
 
 #include "Controller.h"
 #include "SensorData.h"
@@ -26,11 +27,17 @@ public:
 private slots:
     void iniciarSistema();
     void pararSistema();
+    void atualizarUIParaModo();
     void atualizarInterface(const SensorData &dados);
 
 private:
     void setupUI();
+
+    // =========================
+    // COMPONENTES PRINCIPAIS
+    // =========================
     CilindroView *cilindroView;
+    QGroupBox *grupoTeste;
 
     // =========================
     // CONTROLE
@@ -43,6 +50,7 @@ private:
     // =========================
     QPushButton *btnStart;
     QPushButton *btnStop;
+    QPushButton *btnReset;
 
     // =========================
     // LABELS (LEITURAS)
@@ -76,12 +84,46 @@ private:
     QRadioButton *radioRetorno;
 
     // =========================
+    // CAMPOS ENSAIO AUTOMÁTICO
+    // =========================
+    QLineEdit *campoAltura;
+    QLineEdit *campoVelAprox;
+    QLineEdit *campoPressaoAprox;
+    QLineEdit *campoVelTeste;
+    QLineEdit *campoPressaoTeste;
+
+    // =========================
     // ESTADO DO SISTEMA
     // =========================
     double tempo;
     double posicaoAtual;
     double deslocamentoMaximo;
     double deslocamentoMinimo;
+    double pressaoTesteSetpoint;
+
+    // =========================
+    // MODO DE OPERAÇÃO
+    // =========================
+    enum class ModoOperacao
+    {
+        Manual,
+        Automatico
+    };
+
+    ModoOperacao modoAtual;
+
+    // =========================
+    // ESTADO DO ENSAIO
+    // =========================
+    enum class EstadoEnsaio
+    {
+        Aproximacao,
+        Teste,
+        Finalizado
+    };
+
+
+    EstadoEnsaio estadoEnsaio;
 };
 
 #endif // MAINWINDOW_H

@@ -2,6 +2,7 @@
 
 #include <QString>
 #include <cmath>
+#include <QLineEdit>
 
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
@@ -12,8 +13,11 @@ MainWindow::MainWindow(QWidget *parent)
     deslocamentoMinimo = 0.0;
     deslocamentoMaximo = 150.0; // mm
 
-    // Cria interface
-    setupUI();
+    // Enum de modo de operacao
+    modoAtual = ModoOperacao::Manual;
+
+    // dentro do modo manual
+    estadoEnsaio = EstadoEnsaio::Aproximacao;
 
     // Instancia controller
     controller = new Controller(this);
@@ -21,12 +25,18 @@ MainWindow::MainWindow(QWidget *parent)
     // Instancia sensor
     sensor = new SensorSimulator();
 
+    // Cria interface
+    setupUI();
+
+    // Define campo pressão de teste
+    pressaoTesteSetpoint = campoPressaoTeste->text().toDouble();
+
     // Conexões de botões
     connect(btnStart, &QPushButton::clicked,
             this, &MainWindow::iniciarSistema);
 
     connect(btnStop, &QPushButton::clicked,
-            this, &MainWindow::pararSistema);
+            this, &MainWindow::pararSistema);   
 
     // Conexão com Controller
     connect(controller, &Controller::dadosAtualizados,
@@ -47,15 +57,35 @@ MainWindow::~MainWindow()
 void MainWindow::setupUI()
 {
     // =========================
-    // LAYOUT PRINCIPAL
+    // MAIN LAYOUT
     // =========================
     QVBoxLayout *mainLayout = new QVBoxLayout();
 
     // =========================
-    // BOTÕES
+    // BUTTONS
     // =========================
     btnStart = new QPushButton("Iniciar");
     btnStop = new QPushButton("Parar");
+    btnReset = new QPushButton("Reset");
+
+    connect(btnReset, &QPushButton::clicked, this,
+
+            [this]()
+
+            {
+                estadoEnsaio = EstadoEnsaio::Aproximacao;
+
+                if (radioAvanco->isChecked())
+                    posicaoAtual = deslocamentoMinimo;   // 0
+                else
+                    posicaoAtual = deslocamentoMaximo;   // 150
+
+                tempo = 0;
+
+                curvaForca->data()->clear();
+                grafico->replot();
+            });
+
 
     // =========================
     // LABELS
@@ -69,7 +99,7 @@ void MainWindow::setupUI()
     labelPosicao->setAlignment(Qt::AlignCenter);
 
     // =========================
-    // SLIDER PRESSÃO
+    // PRESSURE SLIDER
     // =========================
     sliderPressao = new QSlider(Qt::Horizontal);
     sliderPressao->setRange(0, 70);
@@ -85,7 +115,7 @@ void MainWindow::setupUI()
             });
 
     // =========================
-    // SLIDER VAZÃO
+    // FLOW SLIDER
     // =========================
     sliderVazao = new QSlider(Qt::Horizontal);
     sliderVazao->setRange(0, 500);
@@ -101,11 +131,10 @@ void MainWindow::setupUI()
             });
 
     // =========================
-    // DIREÇÃO
+    // DIRECTION
     // =========================
     radioAvanco = new QRadioButton("Compressão (Avanço)");
     radioRetorno = new QRadioButton("Tração (Retorno)");
-
     radioAvanco->setChecked(true);
 
     QVBoxLayout *direcaoLayout = new QVBoxLayout();
@@ -116,7 +145,45 @@ void MainWindow::setupUI()
     grupoDirecao->setLayout(direcaoLayout);
 
     // =========================
-    // GRÁFICO
+    // OPERATION MODE
+    // =========================
+    QRadioButton *radioManual = new QRadioButton("Manual");
+    QRadioButton *radioAutomatico = new QRadioButton("Automático");
+    radioManual->setChecked(true);
+
+    QVBoxLayout *modoLayout = new QVBoxLayout();
+    modoLayout->addWidget(radioManual);
+    modoLayout->addWidget(radioAutomatico);
+
+    QGroupBox *grupoModo = new QGroupBox("Modo de Operação");
+    grupoModo->setLayout(modoLayout);
+
+    QHBoxLayout *modoDirecaoLayout = new QHBoxLayout();
+    modoDirecaoLayout->addWidget(grupoModo);
+    modoDirecaoLayout->addWidget(grupoDirecao);
+    modoDirecaoLayout->setSpacing(20);
+    modoDirecaoLayout->setStretch(0, 1);
+    modoDirecaoLayout->setStretch(1, 1);
+
+    // =========================
+    // MODE CONNECTS
+    // =========================
+    connect(radioManual, &QRadioButton::clicked, this,
+            [this]()
+            {
+                modoAtual = ModoOperacao::Manual;
+                atualizarUIParaModo();
+            });
+
+    connect(radioAutomatico, &QRadioButton::clicked, this,
+            [this]()
+            {
+                modoAtual = ModoOperacao::Automatico;
+                atualizarUIParaModo();
+            });
+
+    // =========================
+    // GRAPH
     // =========================
     tempo = 0;
 
@@ -136,43 +203,87 @@ void MainWindow::setupUI()
     mainLayout->addWidget(grafico);
 
     // =========================
-    // CONFIGURAÇÕES
+    // CONFIGURATION LAYOUT
     // =========================
     QVBoxLayout *configLayout = new QVBoxLayout();
 
+    configLayout->addLayout(modoDirecaoLayout);
+
+    // manual controls
     configLayout->addWidget(labelPressaoControle);
     configLayout->addWidget(sliderPressao);
     configLayout->addWidget(labelVazao);
     configLayout->addWidget(sliderVazao);
-    configLayout->addWidget(grupoDirecao);
+
+    // =========================
+    // TEST CONFIG
+    // =========================
+    QGridLayout *testeLayout = new QGridLayout();
+
+    QLabel *labelAltura = new QLabel("Altura do objeto (mm)");
+    campoAltura = new QLineEdit("50");
+
+    QLabel *labelVelAprox = new QLabel("Velocidade Aproximação (L/min)");
+    campoVelAprox = new QLineEdit("5");
+
+    QLabel *labelPressaoAprox = new QLabel("Pressão Aproximação (bar)");
+    campoPressaoAprox = new QLineEdit("1");
+
+    QLabel *labelVelTeste = new QLabel("Velocidade Teste (L/min)");
+    campoVelTeste = new QLineEdit("1");
+
+    QLabel *labelPressaoTeste = new QLabel("Pressão Teste (bar)");
+    campoPressaoTeste = new QLineEdit("1");
+
+    // grid layout
+    testeLayout->addWidget(labelAltura, 0, 0);
+    testeLayout->addWidget(campoAltura, 0, 1);
+    testeLayout->addWidget(labelVelAprox, 0, 2);
+    testeLayout->addWidget(campoVelAprox, 0, 3);
+
+    testeLayout->addWidget(labelPressaoAprox, 1, 0);
+    testeLayout->addWidget(campoPressaoAprox, 1, 1);
+    testeLayout->addWidget(labelVelTeste, 1, 2);
+    testeLayout->addWidget(campoVelTeste, 1, 3);
+
+    testeLayout->addWidget(labelPressaoTeste, 2, 0);
+    testeLayout->addWidget(campoPressaoTeste, 2, 1);
+
+    testeLayout->setHorizontalSpacing(15);
+    testeLayout->setVerticalSpacing(10);
+    testeLayout->setColumnStretch(1, 1);
+    testeLayout->setColumnStretch(3, 1);
+
+    grupoTeste = new QGroupBox("Configuração de Ensaio");
+    grupoTeste->setLayout(testeLayout);
+    grupoTeste->setVisible(false);
+
+    configLayout->addWidget(grupoTeste);
 
     QGroupBox *grupoConfig = new QGroupBox("Configurações");
     grupoConfig->setLayout(configLayout);
 
     // =========================
-    // CILINDRO
+    // CYLINDER
     // =========================
     cilindroView = new CilindroView();
 
-    // =========================
-    // LAYOUT LATERAL (AQUI É A MUDANÇA)
-    // =========================
     QHBoxLayout *areaLateral = new QHBoxLayout();
+    areaLateral->addWidget(grupoConfig);
+    areaLateral->addWidget(cilindroView);
 
-    areaLateral->addWidget(grupoConfig);   // esquerda
-    areaLateral->addWidget(cilindroView);  // direita
-
-    areaLateral->setStretch(0, 2); // config maior
-    areaLateral->setStretch(1, 1); // cilindro menor
+    areaLateral->setStretch(0, 2);
+    areaLateral->setStretch(1, 1);
 
     mainLayout->addLayout(areaLateral);
 
     // =========================
-    // CONTROLES
+    // CONTROL PANEL
     // =========================
     QHBoxLayout *controlLayout = new QHBoxLayout();
     controlLayout->addWidget(btnStart);
     controlLayout->addWidget(btnStop);
+    controlLayout->addWidget(btnReset);
     controlLayout->addWidget(labelForca);
     controlLayout->addWidget(labelPressao);
     controlLayout->addWidget(labelPosicao);
@@ -182,20 +293,17 @@ void MainWindow::setupUI()
 
     mainLayout->addWidget(grupoControle);
 
-    // =========================
-    // PROPORÇÕES
-    // =========================
-    mainLayout->setStretch(0, 3); // gráfico
-    mainLayout->setStretch(1, 2); // área lateral
-    mainLayout->setStretch(2, 1); // controle
+    // layout stretch
+    mainLayout->setStretch(0, 3);
+    mainLayout->setStretch(1, 2);
+    mainLayout->setStretch(2, 1);
 
     setLayout(mainLayout);
 
-    // =========================
-    // JANELA
-    // =========================
     setWindowTitle("Máquina de Tração e Compressão - Simulação");
-    resize(900, 650);
+    resize(1100, 650);
+
+    atualizarUIParaModo();
 }
 
 
@@ -209,63 +317,174 @@ void MainWindow::pararSistema()
     controller->stop();
 }
 
+void MainWindow::atualizarUIParaModo()
+{
+    if (modoAtual == ModoOperacao::Manual)
+    {
+        // manual mode
+        sliderPressao->setEnabled(true);
+        sliderVazao->setEnabled(true);
+
+        grupoTeste->setVisible(false);
+    }
+    else
+    {
+        // automatic mode
+        sliderPressao->setEnabled(false);
+        sliderVazao->setEnabled(false);
+
+        grupoTeste->setVisible(true);
+    }
+}
+
+
 void MainWindow::atualizarInterface(const SensorData &dados)
 {
     Q_UNUSED(dados);
 
-    // =========================
-    // PRESSÃO
-    // =========================
-    double pressaoBar = sliderPressao->value() / 10.0;
-    double pressaoPa = pressaoBar * 100000;
+    double pressaoBar;
+    double vazao;
 
     // =========================
-    // GEOMETRIA DO CILINDRO
+    // AUTOMATIC MODE WITH STATE
     // =========================
-    double D = 0.063; // diâmetro êmbolo (m)
-    double d = 0.025; // diâmetro haste (m)
+    if (modoAtual == ModoOperacao::Automatico)
+    {
+        double alturaObjeto = campoAltura->text().toDouble();
+        double velAprox = campoVelAprox->text().toDouble();
+        double pressaoAprox = campoPressaoAprox->text().toDouble();
+        double velTeste = campoVelTeste->text().toDouble();
+        if (estadoEnsaio == EstadoEnsaio::Aproximacao)
+        {
+            pressaoTesteSetpoint = campoPressaoTeste->text().toDouble();
+        }
+
+
+        // contact position based on direction
+        double posicaoContato;
+
+        if (radioAvanco->isChecked())
+            posicaoContato = deslocamentoMaximo - alturaObjeto;
+        else
+            posicaoContato = alturaObjeto;
+
+        // =========================
+        // STATE MACHINE
+        // =========================
+        switch (estadoEnsaio)
+        {
+        case EstadoEnsaio::Aproximacao:
+        {
+            sliderPressao->setEnabled(false);  // trava
+
+            pressaoBar = pressaoAprox;
+            vazao = velAprox;
+
+
+            if ((radioAvanco->isChecked() && posicaoAtual >= posicaoContato) ||
+                (!radioAvanco->isChecked() && posicaoAtual <= posicaoContato))
+            {
+                estadoEnsaio = EstadoEnsaio::Teste;
+
+                // sincroniza slider com valor digitado pelo usuario
+                double pressaoTeste = campoPressaoTeste->text().toDouble();
+                sliderPressao->setValue(static_cast<int>(pressaoTeste * 10));
+            }
+
+
+            break;
+        }
+
+        case EstadoEnsaio::Teste:
+        {
+            sliderPressao->setEnabled(true);
+
+            pressaoBar = sliderPressao->value() / 10.0;
+            vazao = velTeste;
+
+            // sincroniza setpoint com operador
+            pressaoTesteSetpoint = pressaoBar;
+
+            campoPressaoTeste->setText(QString::number(pressaoBar, 'f', 1));
+
+            break;
+        }
+
+
+
+        case EstadoEnsaio::Finalizado:
+        {
+            sliderPressao->setEnabled(false);
+
+            pressaoBar = 0;
+            vazao = 0;
+
+            break;
+        }
+        }
+
+
+        sliderPressao->setValue(static_cast<int>(pressaoTesteSetpoint * 10));
+        sliderVazao->setValue(static_cast<int>(vazao * 10));
+    }
+    else
+    {
+        // =========================
+        // MANUAL MODE
+        // =========================
+        pressaoBar = sliderPressao->value() / 10.0;
+        vazao = sliderVazao->value() / 10.0;
+
+        estadoEnsaio = EstadoEnsaio::Aproximacao;
+    }
+
+    // =========================
+    // CONVERSION
+    // =========================
+    double pressaoPa = pressaoBar * 100000;
+    double vazao_m3s = vazao / 60000.0;
+
+    // =========================
+    // CYLINDER GEOMETRY
+    // =========================
+    double D = 0.063;
+    double d = 0.025;
 
     double areaAvanco = M_PI * pow(D, 2) / 4.0;
     double areaRetorno = M_PI * (pow(D, 2) - pow(d, 2)) / 4.0;
 
-    double area;
+    double area = radioAvanco->isChecked() ? areaAvanco : areaRetorno;
 
-    // =========================
-    // VAZÃO → VELOCIDADE (FÍSICO)
-    // =========================
-    double vazao = sliderVazao->value() / 10.0;       // L/min
-    double vazao_m3s = vazao / 60000.0;               // m³/s
-
-    double velocidade_m_s;
-    double velocidade; // mm por ciclo
-
-    // Define área e direção
-    if (radioAvanco->isChecked())
-    {
-        area = areaAvanco;
-    }
-    else
-    {
-        area = areaRetorno;
-    }
-
-    // velocidade física m/s
     if (area <= 0.0)
         return;
-    velocidade_m_s = vazao_m3s / area;
 
-    // conversão para mm / ciclo (ajuste de tempo discreto)
-    velocidade = velocidade_m_s * 1000 * 0.1;
+    double velocidade_m_s = vazao_m3s / area;
+    double velocidade = velocidade_m_s * 1000 * 0.1;
 
     // =========================
-    // MOVIMENTO DO CILINDRO
+    // MOVEMENT
     // =========================
+
+    double alturaObjeto = campoAltura->text().toDouble();
+
+    double posicaoContato;
+    if (radioAvanco->isChecked())
+        posicaoContato = deslocamentoMaximo - alturaObjeto;
+    else
+        posicaoContato = alturaObjeto;
+
     if (radioAvanco->isChecked())
     {
         posicaoAtual += velocidade;
 
         if (posicaoAtual > deslocamentoMaximo)
             posicaoAtual = deslocamentoMaximo;
+
+        if (modoAtual == ModoOperacao::Automatico &&
+            posicaoAtual > posicaoContato)
+        {
+            posicaoAtual = posicaoContato;
+        }
     }
     else
     {
@@ -273,40 +492,45 @@ void MainWindow::atualizarInterface(const SensorData &dados)
 
         if (posicaoAtual < deslocamentoMinimo)
             posicaoAtual = deslocamentoMinimo;
+
+        if (modoAtual == ModoOperacao::Automatico &&
+            posicaoAtual < posicaoContato)
+        {
+            posicaoAtual = posicaoContato;
+        }
     }
 
     // =========================
-    // FORÇA
+    // FORCE
     // =========================
     double forca = pressaoPa * area;
 
     // =========================
-    // APLICA RUÍDO (SENSORES)
+    // SENSOR
     // =========================
-    double forcaMedida = sensor->aplicarRuido(forca, 0.02);           // 2%
-    double pressaoMedida = sensor->aplicarRuido(pressaoBar, 0.01);    // 1%
-    double posicaoMedida = sensor->aplicarRuido(posicaoAtual, 0.005); // 0.5%
+    double forcaMedida = sensor->aplicarRuido(forca, 0.02);
+    double pressaoMedida = sensor->aplicarRuido(pressaoBar, 0.01);
+    double posicaoMedida = sensor->aplicarRuido(posicaoAtual, 0.005);
 
     // =========================
-    // ATUALIZA INTERFACE
+    // UI
     // =========================
     labelForca->setText("Força: " + QString::number(forcaMedida, 'f', 0) + " N");
     labelPressao->setText("Pressão: " + QString::number(pressaoMedida, 'f', 2) + " bar");
     labelPosicao->setText("Posição: " + QString::number(posicaoMedida, 'f', 1) + " mm");
 
     // =========================
-    // GRÁFICO
+    // GRAPH
     // =========================
     curvaForca->addData(tempo, forcaMedida);
-
     grafico->xAxis->setRange(tempo, 50, Qt::AlignRight);
     grafico->yAxis->rescale(true);
     grafico->replot();
 
+    // =========================
+    // CYLINDER
+    // =========================
     cilindroView->setPosicao(posicaoAtual, deslocamentoMaximo);
 
-    // =========================
-    // TEMPO
-    // =========================
     tempo++;
 }
