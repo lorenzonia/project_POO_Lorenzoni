@@ -31,4 +31,3 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 QT += core gui widgets printsupport
-QMAKE_CXXFLAGS += -Wa,-mbig-obj
