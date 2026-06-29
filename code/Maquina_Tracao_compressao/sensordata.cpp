@@ -1,4 +1,4 @@
-#include "SensorData.h"
+#include "sensordata.h"
 
 SensorData::SensorData()
     : forca(0.0), pressao(0.0), posicao(0.0),

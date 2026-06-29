@@ -1,40 +1,40 @@
-#include "CilindroView.h"
+#include "cilindroview.h"
+
 #include <QPen>
 #include <QBrush>
 
 CilindroView::CilindroView(QWidget *parent)
-    : QGraphicsView(parent), posicaoMax(150)
+    : QGraphicsView(parent),
+    posicaoMax(150.0)
 {
     scene = new QGraphicsScene(this);
     setScene(scene);
 
-    setMinimumHeight(300);
+    setMinimumHeight(350);
 
     // =========================
-    // PARÂMETROS
+    // GEOMETRIA GERAL
     // =========================
-    larguraCena = 200;
-    alturaCena = 290;
+
+    larguraCena = 260;
+    alturaCena  = 350;
 
     margem = 20;
 
     larguraCorpo = 40;
-    alturaCorpo = 230;
+    alturaCorpo  = 300;
 
-    // ✅ CONTROLE GLOBAL DE POSIÇÃO X e Y
-    offsetX = 130;
-    offsetY = -20;
+    offsetX = 150;
 
     setSceneRect(0, 0, larguraCena, alturaCena);
 
-    int topo = margem;
+    // =========================
+    // CORPO DO CILINDRO
+    // =========================
 
-    // =========================
-    // CORPO
-    // =========================
     corpo = scene->addRect(
         offsetX,
-        topo,
+        margem,
         larguraCorpo,
         alturaCorpo,
         QPen(Qt::black),
@@ -42,89 +42,156 @@ CilindroView::CilindroView(QWidget *parent)
         );
 
     // =========================
-    // HASTE (AZUL)
+    // HASTE
     // =========================
+
     int larguraHaste = 10;
-    int centroLocal = offsetX - ((larguraHaste / 2)-20);
 
-    haste = new QGraphicsRectItem(
-        centroLocal,
-        offsetY,
+    int centroCorpo =
+        offsetX + larguraCorpo / 2;
+
+    int xHaste =
+        centroCorpo - larguraHaste / 2;
+
+    haste = scene->addRect(
+        xHaste,
+        margem,
         larguraHaste,
-        0
+        1,
+        QPen(Qt::black),
+        QBrush(Qt::blue)
         );
 
-    haste->setBrush(Qt::blue);
-    haste->setParentItem(corpo);
+    // =========================
+    // PISTAO
+    // =========================
 
-    // =========================
-    // PISTÃO (VERMELHO)
-    // =========================
-    pistao = new QGraphicsEllipseItem(
-        centroLocal - 15,
-        0,
+    pistao = scene->addEllipse(
+        offsetX,
+        margem,
         larguraCorpo,
-        20
+        20,
+        QPen(Qt::black),
+        QBrush(Qt::red)
         );
 
-    pistao->setBrush(Qt::red);
-    pistao->setPen(QPen(Qt::black));
-    pistao->setParentItem(corpo);
+    // =========================
+    // INDICADOR POSICAO
+    // =========================
+
+    indicadorPosicao = scene->addLine(
+        offsetX - 30,
+        margem,
+        offsetX + larguraCorpo + 30,
+        margem,
+        QPen(Qt::yellow, 2)
+        );
 
     // =========================
-    // ESCALA (GLOBAL)
+    // REGUA
     // =========================
+
     int divisoes = 5;
 
-    for (int i = 0; i <= divisoes; ++i)
+    for(int i = 0; i <= divisoes; ++i)
     {
-        int y = topo + i * (alturaCorpo / divisoes);
+        int y =
+            margem +
+            i * (alturaCorpo / divisoes);
 
-        scene->addLine(10, y, 25, y);
+        scene->addLine(
+            70,
+            y,
+            85,
+            y
+            );
 
-        double proporcao = (double)i / divisoes;
-        int valor = (int)(proporcao * posicaoMax);
+        double proporcao =
+            static_cast<double>(i) / divisoes;
 
-        auto texto = scene->addText(QString::number(valor) + " mm");
-        texto->setPos(5, y - 10);
+        int valor =
+            static_cast<int>(
+                proporcao * posicaoMax
+                );
+
+        auto texto =
+            scene->addText(
+                QString::number(valor) + " mm"
+                );
+
+        texto->setPos(
+            10,
+            y - 10
+            );
     }
 }
 
-void CilindroView::setPosicao(double pos, double maxPos)
+void CilindroView::setPosicao(double pos,
+                              double maxPos)
 {
-    if (maxPos <= 0.0)
+    if(maxPos <= 0.0)
         return;
 
     posicaoMax = maxPos;
 
-    if (pos < 0) pos = 0;
-    if (pos > posicaoMax) pos = posicaoMax;
+    if(pos < 0.0)
+        pos = 0.0;
 
-    double proporcao = pos / posicaoMax;
-
-    int yPistao = static_cast<int>(proporcao * alturaCorpo);
-
-    int larguraHaste = 10;
-    int centroLocal = offsetX - ((larguraHaste / 2)-20);
+    if(pos > posicaoMax)
+        pos = posicaoMax;
 
     // =========================
-    // PISTÃO (VERMELHO)
+    // CONVERSAO mm -> pixel
     // =========================
-    pistao->setPos(0, yPistao);
+
+    double escala =
+        static_cast<double>(alturaCorpo)
+        / posicaoMax;
+
+    double y =
+        margem + (pos * escala);
+
+    const int alturaPistao = 20;
 
     // =========================
-    // HASTE (AZUL)
+    // PISTAO
     // =========================
-    haste->setPos(
-        centroLocal,
-        yPistao
+
+    pistao->setRect(
+        offsetX,
+        y - alturaPistao / 2,
+        larguraCorpo,
+        alturaPistao
         );
 
+    // =========================
+    // HASTE
+    // =========================
+
+    int larguraHaste = 10;
+
+    int centroCorpo =
+        offsetX + larguraCorpo / 2;
+
+    int xHaste =
+        centroCorpo - larguraHaste / 2;
+
     haste->setRect(
-        0,
-        -yPistao,
+        xHaste,
+        margem,
         larguraHaste,
-        yPistao
+        y - margem
+        );
+
+    // =========================
+    // INDICADOR
+    // =========================
+
+    indicadorPosicao->setLine(
+        offsetX - 30,
+        y,
+        offsetX + larguraCorpo + 30,
+        y
         );
 
     viewport()->update();

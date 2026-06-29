@@ -5,6 +5,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsRectItem>
 #include <QGraphicsEllipseItem>
+#include <QGraphicsLineItem>
 
 class CilindroView : public QGraphicsView
 {
@@ -22,6 +23,7 @@ private:
     QGraphicsRectItem *corpo;
     QGraphicsRectItem *haste;
     QGraphicsEllipseItem *pistao;
+    QGraphicsLineItem *indicadorPosicao;
 
     // Parâmetros ajustáveis
     double posicaoMax;
@@ -34,7 +36,6 @@ private:
     int alturaCorpo;
 
     int offsetX;
-    int offsetY;
 };
 
 #endif

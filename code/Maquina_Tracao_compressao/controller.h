@@ -4,9 +4,9 @@
 #include <QObject>
 #include <QTimer>
 
-#include "SensorSimulator.h"
-#include "SensorData.h"
-#include "Cilindro.h"
+#include "sensorsimulator.h"
+#include "sensordata.h"
+#include "cilindro.h"
 
 class Controller : public QObject
 {

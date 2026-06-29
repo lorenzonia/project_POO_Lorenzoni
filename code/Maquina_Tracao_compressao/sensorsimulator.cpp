@@ -1,4 +1,4 @@
-#include "SensorSimulator.h"
+#include "sensorsimulator.h"
 #include <QRandomGenerator>
 #include <cmath>
 

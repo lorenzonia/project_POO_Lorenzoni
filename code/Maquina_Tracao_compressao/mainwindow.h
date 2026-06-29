@@ -10,9 +10,9 @@
 #include <QGroupBox>
 #include <QLineEdit>
 
-#include "Controller.h"
-#include "SensorData.h"
-#include "SensorSimulator.h"
+#include "controller.h"
+#include "sensordata.h"
+#include "sensorsimulator.h"
 #include "qcustomplot.h"
 #include "cilindroview.h"
 
